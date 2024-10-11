@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+  <meta charset="utf-8">
+  <title>VVBS</title>
+
+  <!-- mobile responsive meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <!-- ** Plugins Needed for the Project ** -->
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="static/plugins/bootstrap/bootstrap.min.css">
+  <!-- themefy-icon -->
+  <link rel="stylesheet" href=" static/plugins/themify-icons/themify-icons.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="static/plugins/slick/slick.css">
+  <!-- venobox popup -->
+  <link rel="stylesheet" href="static/plugins/Venobox/venobox.css">
+  <!-- aos -->
+  <link rel="stylesheet" href="static/plugins/aos/aos.css">
+
+  <!-- Main Stylesheet -->
+  <link href="static/css/style.css" rel="stylesheet">
+  
+  <!--Favicon-->
+  <link rel="shortcut icon" href="static/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
+
+  <!-- Additional styles for Object Detection -->
+  <style>
+    /* General body styling for detection page */
+    .detection-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      margin: 20px auto;
+    }
+
+    .detection-form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .detection-form label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .detection-form input[type="text"] {
+      padding: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .detection-form button {
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .detection-form button:hover {
+      background-color: #218838;
+    }
+
+    .detection-output, .detection-error {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+    }
+
+    .detection-output {
+      background-color: #e9f7ef;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .detection-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #terminateButton {
+      padding: 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    #terminateButton:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+
+<body>
+  
+
+<!-- navigation -->
+<section class="fixed-top navigation">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a class="navbar-brand" href="index.html"><img src="static/images/logo2.png" alt="logo"></a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- navbar -->
+      <div class="collapse navbar-collapse text-center" id="navbar">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link page-scroll" href="index.html#feature">Feature</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="service.html">Setup</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link page-scroll" href="index.html#team">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link page-scroll" href="index.html#pricing">YOLOV5</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">Detection</a>
+          </li>
+        </ul>
+        <!---- <a href="#" class="btn btn-primary ml-lg-3 primary-shadow"></a> -->
+      </div>
+    </nav>
+  </div>
+</section>
+<!-- /navigation -->
+
+<!-- Detection Section -->
+<section id="detection" class="container">
+  <div class="detection-container">
+    <h1>Object Detection</h1>
+    <form id="commandForm" class="detection-form">
+      <label for="command">Command:</label>
+      <input type="text" id="command" name="command" value="python detect.py --weights yolov5s.pt --source 0" required>
+      <button type="submit">Run</button>
+      <button type="button" id="terminateButton">Terminate</button>
+    </form>
+
+    <div class="loading" id="loading">
+      <p>Processing...</p>
+    </div>
+
+    <div class="detection-output" id="output">
+      <h2>Output:</h2>
+      <p id="outputText"></p>
+    </div>
+
+    <div class="detection-error" id="error">
+      <h2>Error:</h2>
+      <p id="errorText"></p>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer class="footer-section footer" style="background-image: url(images/backgrounds/footer-bg.png);">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 text-center text-lg-left mb-4 mb-lg-0">
+        <!-- logo -->
+        <a href="index.html">
+          <img class="img-fluid" src="static/images/logo.png" alt="logo">
+        </a>
+      </div>
+      <!-- footer menu -->
+      <nav class="col-lg-8 align-self-center mb-5">
+        <ul class="list-inline text-lg-right text-center footer-menu">
+          <li class="list-inline-item active"><a href="index.html">Home</a></li>
+          <li class="list-inline-item"><a class="page-scroll" href="#feature">Feature</a></li>
+          <li class="list-inline-item"><a href="about.html">About</a></li>
+          <li class="list-inline-item"><a class="page-scroll" href="#team">Team</a></li>
+          <li class="list-inline-item"><a class="page-scroll" href="#pricing">YOLOv5</a></li>
+          <li class="list-inline-item"><a href="contact.html">Detection</a></li>
+        </ul>
+      </nav>
+      <!-- footer social icon -->
+      <nav class="col-12">
+        <ul class="list-inline text-lg-right text-center social-icon">
+          <li class="list-inline-item">
+            <a class="facebook" href="#"><i class="ti-facebook"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a class="twitter" href="#"><i class="ti-twitter-alt"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a class="linkedin" href="#"><i class="ti-linkedin"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a class="black" href="#"><i class="ti-github"></i></a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>
+<!-- /footer -->
+
+<!-- jQuery -->
+<script src="static/plugins/jQuery/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="static/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- slick slider -->
+<script src="static/plugins/slick/slick.min.js"></script>
+<!-- venobox -->
+<script src="static/plugins/Venobox/venobox.min.js"></script>
+<!-- aos -->
+<script src="static/plugins/aos/aos.js"></script>
+<!-- Main Script -->
+<script src="static/js/script.js"></script>
+
+<!-- Detection Script -->
+<script>
+  const form = document.getElementById('commandForm');
+  const outputDiv = document.getElementById('output');
+  const outputText = document.getElementById('outputText');
+  const errorDiv = document.getElementById('error');
+  const errorText = document.getElementById('errorText');
+  const loadingDiv = document.getElementById('loading');
+  const terminateButton = document.getElementById('terminateButton');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const command = document.getElementById('command').value;
+
+    try {
+      loadingDiv.style.display = 'block';
+      outputDiv.style.display = 'none';
+      errorDiv.style.display = 'none';
+
+      const response = await fetch('/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command })
+      });
+
+      const data = await response.json();
+
+      loadingDiv.style.display = 'none';
+
+      if (data.error) {
+        errorText.innerText = data.error;
+        errorDiv.style.display = 'block';
+      } else {
+        outputText.innerText = data.output;
+        outputDiv.style.display = 'block';
+      }
+    } catch (error) {
+      loadingDiv.style.display = 'none';
+      errorText.innerText = 'Error occurred while running the command.';
+      errorDiv.style.display = 'block';
+    }
+  });
+
+  terminateButton.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/terminate', { method: 'POST' });
+
+      if (response.ok) {
+        alert('Process terminated successfully.');
+      } else {
+        alert('Failed to terminate process.');
+      }
+    } catch (error) {
+      alert('Error occurred while terminating the process.');
+    }
+  });
+</script>
+
+</body>
+
+</html>

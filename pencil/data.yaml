@@ -1,0 +1,12 @@
+train: C:/Users/Dell/yolov5/pencil/train/images
+val: C:/Users/Dell/yolov5/pencil/valid/images
+test: C:/Users/Dell/yolov5/pencil/test/images
+nc: 4
+names: ['Eraser', 'Pencil', 'Scale', 'Sharpener']
+
+roboflow:
+  workspace: project
+  project: ai-based-automatic-stationery-billing-system-data
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/project/ai-based-automatic-stationery-billing-system-data/dataset/1

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Object Detection Web Interface</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    /* Background animation styling */
+    body {
+      --s: 25vmin;
+      --p: calc(var(--s) / 2);
+      --c1: pink;
+      --c2: dodgerblue;
+      --c3: white;
+      --bg: var(--c3);
+      --d: 4000ms;
+      --e: cubic-bezier(0.76, 0, 0.24, 1);
+      
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(45deg, var(--c1) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--c1) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--c2) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--c2) 75%);
+      background-size: var(--s) var(--s);
+      background-position: 
+        calc(var(--p) *  1) calc(var(--p) *  0), 
+        calc(var(--p) * -1) calc(var(--p) *  1), 
+        calc(var(--p) *  1) calc(var(--p) * -1), 
+        calc(var(--p) * -1) calc(var(--p) *  0);
+      animation: 
+        color var(--d) var(--e) infinite,
+        position var(--d) var(--e) infinite;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    @keyframes color {
+      0%, 25% {
+        --bg: var(--c3);
+      }
+      26%, 50% {
+        --bg: var(--c1);
+      }
+      51%, 75% {
+        --bg: var(--c3);
+      }
+      76%, 100% {
+        --bg: var(--c2);
+      }
+    }
+
+    @keyframes position {
+      0% {
+        background-position: 
+          calc(var(--p) *  1) calc(var(--p) *  0), 
+          calc(var(--p) * -1) calc(var(--p) *  1), 
+          calc(var(--p) *  1) calc(var(--p) * -1), 
+          calc(var(--p) * -1) calc(var(--p) *  0);
+      }
+      25% {
+        background-position: 
+          calc(var(--p) *  1) calc(var(--p) *  4), 
+          calc(var(--p) * -1) calc(var(--p) *  5), 
+          calc(var(--p) *  1) calc(var(--p) *  3), 
+          calc(var(--p) * -1) calc(var(--p) *  4);
+      }
+      50% {
+        background-position: 
+          calc(var(--p) *  3) calc(var(--p) * 8), 
+          calc(var(--p) * -3) calc(var(--p) * 9), 
+          calc(var(--p) *  2) calc(var(--p) * 7), 
+          calc(var(--p) * -2) calc(var(--p) * 8);
+      }
+      75% {
+        background-position: 
+          calc(var(--p) *  3) calc(var(--p) * 12), 
+          calc(var(--p) * -3) calc(var(--p) * 13), 
+          calc(var(--p) *  2) calc(var(--p) * 11), 
+          calc(var(--p) * -2) calc(var(--p) * 12);
+      }
+      100% {    
+        background-position: 
+          calc(var(--p) *  5) calc(var(--p) * 16), 
+          calc(var(--p) * -5) calc(var(--p) * 17), 
+          calc(var(--p) *  5) calc(var(--p) * 15), 
+          calc(var(--p) * -5) calc(var(--p) * 16);
+      }
+    }
+
+    @media (prefers-reduced-motion) {
+      body {
+        animation: none;
+      }
+    }
+
+    /* Container for the interface */
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      z-index: 1; /* Ensure form is visible on top of the animated background */
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    /* Form styling */
+    form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Button styling */
+    button {
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    /* Output and error styling */
+    .output, .error {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+    }
+
+    .output {
+      background-color: #e9f7ef;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Loading indicator */
+    .loading {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* Terminate button styling */
+    #terminateButton {
+      padding: 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    #terminateButton:hover {
+      background-color: #c82333;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Object Detection</h1>
+    <form id="commandForm">
+      <label for="command">Command:</label>
+      <input type="text" id="command" name="command" value="python detect.py --weights yolov5s.pt --source 0" required>
+      <button type="submit">Run</button>
+      <button type="button" id="terminateButton">Terminate</button>
+    </form>
+
+    <div class="loading" id="loading">
+      <p>Processing...</p>
+    </div>
+
+    <div class="output" id="output">
+      <h2>Output:</h2>
+      <p id="outputText"></p>
+    </div>
+
+    <div class="error" id="error">
+      <h2>Error:</h2>
+      <p id="errorText"></p>
+    </div>
+  </div>
+
+  <script>
+    let currentProcessId = null;
+
+    // JavaScript to handle form submission
+    document.getElementById('commandForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      const command = document.getElementById('command').value.trim();
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('output').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+
+      fetch('/run-command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: command })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('loading').style.display = 'none';
+        if (data.error) {
+          document.getElementById('errorText').innerText = data.error;
+          document.getElementById('error').style.display = 'block';
+        } else {
+          document.getElementById('outputText').innerText = data.output;
+          document.getElementById('output').style.display = 'block';
+          currentProcessId = data.processId;
+        }
+      })
+      .catch(error => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('errorText').innerText = 'Error: ' + error;
+        document.getElementById('error').style.display = 'block';
+      });
+    });
+
+    // Terminate process
+    document.getElementById('terminateButton').addEventListener('click', function() {
+      if (currentProcessId) {
+        fetch('/terminate-process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ processId: currentProcessId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('outputText').innerText = 'Process terminated successfully.';
+            document.getElementById('output').style.display = 'block';
+            currentProcessId = null;
+          } else {
+            document.getElementById('errorText').innerText = 'Failed to terminate process.';
+            document.getElementById('error').style.display = 'block';
+          }
+        })
+        .catch(error => {
+          document.getElementById('errorText').innerText = 'Error: ' + error;
+          document.getElementById('error').style.display = 'block';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

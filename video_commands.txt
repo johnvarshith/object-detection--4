@@ -1,0 +1,1 @@
+python detect.py --weights yolov5l.pt --source 0

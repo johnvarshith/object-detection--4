@@ -1,0 +1,13 @@
+train: C:/Users/Dell/yolov5/pen/train/images
+val: C:/Users/Dell/yolov5/pen/valid/images
+test: C:/Users/Dell/yolov5/pen/test/images
+
+nc: 1
+names: ['pen']
+
+roboflow:
+  workspace: kalemveriseti
+  project: kalem_tespiti
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/kalemveriseti/kalem_tespiti/dataset/5
